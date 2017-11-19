@@ -14,8 +14,6 @@ LiquidCrystal_I2C lcd(0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
 
 Bounce Taster;
 
-
-
 void setup() {
   pinMode(PIN_TASTER, INPUT_PULLUP);
   pinMode(PIN_RELAIS, OUTPUT);
@@ -50,10 +48,10 @@ void display_temp(float temp_c) {
 
 void display_va(float spannung_v, float strom_a) {
   lcd.clear();
-  
+
   for (int l = 0; l <= ((spannung_v / 35) * 20); l++){
      lcd.setCursor(l,1);
-     lcd.print("%"); 
+     lcd.print("%");
   }
   lcd.setCursor(0,0);
   lcd.print("Spannung:");
@@ -85,7 +83,7 @@ void loop() {
   temp_c = (adc_temp / 1024) * 30;
   spannung_v = (adc_spannung / 1024) * 33 * 0.8035;
   strom_a = (adc_strom - 512) * 0.3 * 0.25;
-  if(strom_a < 0) 
+  if(strom_a < 0)
     strom_a = 0;
 
   // Display aktualisieren
@@ -93,7 +91,7 @@ void loop() {
   if(updated_ms == current_ms)
      return;
   updated_ms = current_ms;
-  
+
   if(!(updated_ms % DISPLAY_UPDATE_MS)) { // Display nur alle 100ms updaten
     if(!Taster.read()) { // Temperatur anzeigen, während der Taster gedrückt wird
       display_temp(temp_c);
@@ -102,4 +100,3 @@ void loop() {
     }
   }
 }
-
