@@ -9,6 +9,10 @@
 #define PIN_VOLT A0
 #define PIN_AMP A1
 #define PIN_TEMP A5
+#define THERMISTOR_SPANNUNGSTEILER_RES 10000
+#define THERMISTOR_NOMINALWERT 10000
+#define THERMISTOR_NOMINALTEMP 25
+#define THERMISTOR_B_KOEFFIZIENT 3950
 
 LiquidCrystal_I2C lcd(0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
 
@@ -80,8 +84,17 @@ void loop() {
   adc_strom = analogRead(PIN_AMP);
 
   // Werte berechnen
-  temp_c = (adc_temp / 1024) * 30;
+  temp_c = 1023 / adc_temp -1;
+  temp_c = THERMISTOR_SPANNUNGSTEILER_RES / temp_c;
+  temp_c = temp_c / THERMISTOR_NOMINALWERT; // (R/Ro)
+  temp_c = log(temp_c); // ln(R/Ro)
+  temp_c /= THERMISTOR_B_KOEFFIZIENT; // 1/B * ln(R/Ro)
+  temp_c += 1.0 / (THERMISTOR_NOMINALTEMP + 273.15); // + (1/To)
+  temp_c = 1.0 / temp_c; // Kehrwert
+  temp_c -= 273.15; // Celsiusieren
+
   spannung_v = (adc_spannung / 1024) * 33 * 0.8035;
+
   strom_a = (adc_strom - 512) * 0.3 * 0.25;
   if(strom_a < 0)
     strom_a = 0;
