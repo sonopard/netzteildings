@@ -7,8 +7,8 @@
 #define PIN_TASTER 2
 #define PIN_RELAIS 7
 #define PIN_VOLT A0
-#define PIN_AMP A1
-#define PIN_TEMP A5
+#define PIN_AMP A3
+#define PIN_TEMP A4
 #define THERMISTOR_SPANNUNGSTEILER_RES 10000
 #define THERMISTOR_NOMINALWERT 10000
 #define THERMISTOR_NOMINALTEMP 25
@@ -24,6 +24,8 @@ void setup() {
   pinMode(PIN_VOLT, INPUT);
   pinMode(PIN_AMP, INPUT);
   pinMode(PIN_TEMP, INPUT);
+
+  digitalWrite(PIN_RELAIS,HIGH);
 
   Taster.attach(PIN_TASTER);
   Taster.interval(30);
@@ -41,6 +43,7 @@ void setup() {
   lcd.setCursor(0,3);
   lcd.print(" >>Von ReinekeWF<<");
   delay(2000);
+  digitalWrite(PIN_RELAIS,LOW);
   lcd.clear();
 }
 
