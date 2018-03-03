@@ -43,36 +43,61 @@ void setup() {
   lcd.setCursor(0,3);
   lcd.print(" >>Von ReinekeWF<<");
   delay(2000);
+<<<<<<< HEAD
   digitalWrite(PIN_RELAIS,LOW);
   lcd.clear();
+=======
+  
+  display_init_va();
+
+  Serial.begin(9600);
+  Serial.println("Hi. Setup Fertig.");
+>>>>>>> 15f5ff102f6b70688f9becf94815688fff8f29c5
 }
 
 void display_temp(float temp_c) {
-  lcd.clear();
-  lcd.setCursor(0,0);
+  lcd.setCursor(12, 0); 
   lcd.print(temp_c);
 }
 
-void display_va(float spannung_v, float strom_a) {
+void display_init_va() {
   lcd.clear();
+  
+  lcd.setCursor(0,0);
+  lcd.print("Spannung:");
+  
+  lcd.setCursor(19,0);
+  lcd.print("V");
+  
+  lcd.setCursor(0,2);
+  lcd.print("Strom:");
+  
+  lcd.setCursor(19,2);
+  lcd.print("A"); 
+}
 
-  for (int l = 0; l <= ((spannung_v / 35) * 20); l++){
+void display_init_temp(){
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("Temperatur: ");  
+}
+
+void display_va(float spannung_v, float strom_a) {
+  int l = 0;
+  lcd.setCursor(0,1);
+  for (; l <= ((spannung_v / 35) * 20); l++){
      lcd.setCursor(l,1);
      lcd.print("%");
   }
-  lcd.setCursor(0,0);
-  lcd.print("Spannung:");
+  for(; l <= 20; l++){
+    lcd.print(" ");
+  }
+  
   lcd.setCursor(14,0);
   lcd.print(spannung_v);
-  lcd.setCursor(19,0);
-  lcd.print("V");
 
-  lcd.setCursor(0,2);
-  lcd.print("Strom:");
   lcd.setCursor(14,2);
   lcd.print(strom_a);
-  lcd.setCursor(19,2);
-  lcd.print("A");
 }
 
 float adc_temp, adc_spannung, adc_strom;
@@ -82,6 +107,7 @@ unsigned long updated_ms, current_ms;
 void loop() {
   // Messungen nehmen
   Taster.update();
+  static bool taster_zustand = false;
   adc_temp = analogRead(PIN_TEMP);
   adc_spannung = analogRead(PIN_VOLT);
   adc_strom = analogRead(PIN_AMP);
@@ -109,7 +135,17 @@ void loop() {
   updated_ms = current_ms;
 
   if(!(updated_ms % DISPLAY_UPDATE_MS)) { // Display nur alle 100ms updaten
-    if(!Taster.read()) { // Temperatur anzeigen, während der Taster gedrückt wird
+    
+    if(Taster.read() != taster_zustand){
+      taster_zustand = Taster.read(); // kleine race condition welche wir mal gepflegt ignorieren
+      if(!taster_zustand){
+        display_init_temp();
+      }else{
+        display_init_va();
+      }
+    }
+    
+    if(!taster_zustand) { // Temperatur anzeigen, während der Taster gedrückt wird
       display_temp(temp_c);
     } else {
       display_va(spannung_v, strom_a);
