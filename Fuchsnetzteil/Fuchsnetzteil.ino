@@ -18,7 +18,34 @@ LiquidCrystal_I2C lcd(0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
 
 Bounce Taster;
 
+byte smiley[8] = {
+B00000,
+B01010,
+B01010,
+B00000,
+B11111,
+B10001,
+B01110,
+B00000
+};
+
+byte fox[8] = {
+B10001,
+B11011,
+B11111,
+B10101,
+B11011,
+B01010,
+B00100,
+B00000
+};
+
+char a = 0;
+char b = 1;
+
 void setup() {
+  
+  
   pinMode(PIN_TASTER, INPUT_PULLUP);
   pinMode(PIN_RELAIS, OUTPUT);
   pinMode(PIN_VOLT, INPUT);
@@ -32,27 +59,37 @@ void setup() {
 
   lcd.begin(20,4);
   lcd.backlight();
+  
+  lcd.clear();
+  lcd.createChar(a, smiley);
+  lcd.createChar(b, fox);
+  lcd.setCursor(0,0);
+  
   lcd.clear();
   lcd.setCursor(0,0);
-  lcd.print(" DC Labor Netzteil");
+  lcd.write(b);
+  lcd.print("DC Labor Netzteil");
+  lcd.write(b);
   lcd.setCursor(0,1);
   lcd.print("Spannung:  0V - 30V");
   lcd.setCursor(0,2);
   lcd.print("Strom:     0mA - 3A");
   delay(1000);
   lcd.setCursor(0,3);
-  lcd.print(" >>Von ReinekeWF<<");
+  lcd.write(b);
+  lcd.print(">>Von ReinekeWF<<");
+  lcd.write(b);
   delay(2000);
-<<<<<<< HEAD
+  
   digitalWrite(PIN_RELAIS,LOW);
   lcd.clear();
-=======
+
   
   display_init_va();
 
   Serial.begin(9600);
   Serial.println("Hi. Setup Fertig.");
->>>>>>> 15f5ff102f6b70688f9becf94815688fff8f29c5
+
 }
 
 void display_temp(float temp_c) {
