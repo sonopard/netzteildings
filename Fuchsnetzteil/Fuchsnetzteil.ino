@@ -87,7 +87,7 @@ void setup() {
   
   display_init_va();
 
-  Serial.begin(9600);
+  Serial.begin(115200);
   Serial.println("Hi. Setup Fertig.");
 
 }
@@ -111,6 +111,7 @@ void display_init_va() {
   
   lcd.setCursor(19,2);
   lcd.print("A"); 
+
 }
 
 void display_init_temp(){
@@ -165,7 +166,7 @@ void loop() {
   if(strom_a < 0)
     strom_a = 0;
 
-  // Display aktualisieren
+  // Display aktualisieren und Serielle ausgabe
   current_ms = millis();
   if(updated_ms == current_ms)
      return;
@@ -173,7 +174,7 @@ void loop() {
 
   if(!(updated_ms % DISPLAY_UPDATE_MS)) { // Display nur alle 100ms updaten
     
-    if(Taster.read() != taster_zustand){
+    if(Taster.read(  ) != taster_zustand){
       taster_zustand = Taster.read(); // kleine race condition welche wir mal gepflegt ignorieren
       if(!taster_zustand){
         display_init_temp();
@@ -187,5 +188,13 @@ void loop() {
     } else {
       display_va(spannung_v, strom_a);
     }
+  Serial.print("Voltage/");
+  Serial.print(spannung_v);
+  Serial.print("/Current/");
+  Serial.print(strom_a);
+  Serial.print("/Temparature/");
+  Serial.print(temp_c);
+  Serial.print("/Fan/");
+  Serial.println(digitalRead(PIN_RELAIS));
   }
 }
